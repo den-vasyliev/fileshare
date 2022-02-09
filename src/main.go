@@ -60,7 +60,7 @@ func sign(url, keyName string, expiration time.Time, s string) ([]byte, error) {
         log.Print(url)
         mac := hmac.New(sha1.New, key)
         mac.Write([]byte(url))
-        sig := base64.URLEncoding.EncodeToString(mac.Sum(nil))
+        sig := base64.RawURLEncoding.EncodeToString(mac.Sum(nil))
         //url += fmt.Sprintf("&Signature=%s", sig)
         
 
@@ -161,11 +161,14 @@ func (h *indexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     cached, err := CACHE.Get(string(r.URL.Path)).Result()
     if err != nil {
         log.Print("No Map")
-        http.Error(w, http.StatusText(403), 403)
+        //http.Error(w, http.StatusText(403), 403)
+        cached = string(r.URL.Path)
     }else{
-    log.Print(cached)
-    http.ServeFile(w, r, fmt.Sprintf(".%s",cached))
-        }
+        log.Print(cached)
+    }
+        log.Print(cached)
+    http.ServeFile(w, r, fmt.Sprintf("./fileshare/%s",cached))
+      //  }
     }
 
     }
